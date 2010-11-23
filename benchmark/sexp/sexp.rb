@@ -1,6 +1,40 @@
 $LOAD_PATH.unshift File.expand_path('../../../lib', __FILE__)
 require 'citrus'
 
+#
+# h1. Introduction
+#
+# This file is the facade over a Sexp grammar/parser aiming at parsing functional 
+# ruby expressions of the following form:
+#
+#   (concat "hello " (ask "Name? ") (times "!" 3))
+#
+# h2. Grammar usage
+#
+#    require 'sexp'
+#    ast = Sexp::parse("...")
+#    [...]
+#
+# h2. Running unit tests
+#
+#   ruby sexp.rb test
+#
+# h2. Modifying the grammar and running benchmarks
+#
+#   # 1. ensure benchmarking on the current version
+#   ruby sexp.rb bench
+#
+#   # 2. modify sexp.citrus or citrus itself
+#   Sexp::VERSION = ...
+#   [...]
+#
+#   # 3. test & benchmarking on the new version
+#   ruby sexp.rb unit
+#   ruby sexp.rb bench
+#
+#   # 4. Compare performances
+#   ruby sexp.rb gnuplot [v1 v2 ... vn]
+#
 module Sexp
 
   # Version of this Sexp grammar
@@ -181,16 +215,15 @@ if $0 == __FILE__
             bench.report(Sexp::VERSION, length, time)
           end
         end
-        bench.gnuplot_compare
+      }
+    when :gnuplot
+      require File.expand_path('../../gbench', __FILE__)
+      Citrus::GBench.load("sexp.bench"){|bench|
+        bench.gnuplot_compare ARGV[1..-1]
       }
     when :profile
       text = Sexp::generate(32)
       require 'profile'
       Sexp::parse(text)
-    when :gnuplot
-      require File.expand_path('../../gbench', __FILE__)
-      Citrus::GBench.load("sexp.bench"){|bench|
-        bench.gnuplot_compare
-      }
   end
 end

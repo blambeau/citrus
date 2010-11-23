@@ -69,14 +69,17 @@ module Citrus
       end
     end
     
-    def gnuplot_compare
-      keys = @measures.keys.sort
+    def gnuplot_compare(versions = nil)
+      keys = (versions.nil? or versions.empty?) ? @measures.keys.sort : versions.sort
+      
+      # generate .dat files for selected versions
       keys.each{|v| 
         ::File.open("#{name}.#{v}.dat", "w"){|io|
           io << self[v].to_gnuplot_data
         }
       }
       
+      # compute fittings
       fittings = []
       keys.each_with_index{|version,index|
         fdef = "a#{index}*((x/1000)**2) + b#{index}*(x/1000) + c#{index}"
@@ -89,27 +92,31 @@ module Citrus
         EOF
       }
       
+      # compute plots
       plots = []
       keys.each_with_index{|version, index|
         fdef = "a#{index}*((x/1000)**2) + b#{index}*(x/1000) + c#{index}"
         plots << <<-EOF.strip
-          #{fdef} title 'fitting #{version}'
+          #{fdef} with lines lt #{index+2} title '#{name} #{version}'
         EOF
         plots << <<-EOF.strip
-          '#{name}.#{version}.dat' using 1:2 title '#{name} #{version}'
+          '#{name}.#{version}.dat' using 1:2 with points lt #{index+2} notitle
         EOF
       }
       
+      # generate .gnuplot file
       ::File.open("#{name}.gnuplot", 'w'){|f|
         f << <<-EOF
-          set terminal png
-          set output "#{name}.png"
+          #set terminal png
+          #set output "#{name}.png"
           set xlabel "Length of input"
           set ylabel "CPU time to parse"
           #{fittings.join("\n")}
           plot #{plots.join(", ")}
         EOF
       }
+      
+      # execute gnuplot
       `gnuplot #{name}.gnuplot`
     end
       
