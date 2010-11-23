@@ -4,7 +4,7 @@ require 'citrus'
 module Sexp
 
   # Version of this Sexp grammar
-  VERSION = "1.0.1"
+  VERSION = "1.0.2"
 
   # Load and evaluate the grammars contained in sexp.citrus into 
   # the global namespace.
@@ -12,7 +12,7 @@ module Sexp
   
   # Delegated to the parser
   def self.parse(input, options = {})
-    Sexp::Parser.parse(input, options)
+    Sexp::Parser.parse(input, {:memoize => true}.merge(options))
   end
   
   # Generates an expression of a given length
