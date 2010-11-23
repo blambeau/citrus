@@ -11,8 +11,8 @@ module Sexp
   Citrus.load(File.expand_path('../sexp', __FILE__))
   
   # Delegated to the parser
-  def self.parse(*args, &block)
-    Sexp::Parser.parse(*args, &block)
+  def self.parse(input, options = {})
+    Sexp::Parser.parse(input, options)
   end
   
   # Generates an expression of a given length
@@ -166,21 +166,26 @@ module Sexp
 end
 
 if $0 == __FILE__
-  # run unit tests
-  require 'test/unit'
-  
-  # run benchmarking
-  require 'benchmark'
-  require File.expand_path('../../gbench', __FILE__)
-  Citrus::GBench.load("sexp.bench"){|bench|
-    (1..100).each do |length|
-      puts "Generating on #{length}"
-      5.times do |i|
-        expr = Sexp.generate(length)
-        time = Benchmark.measure{ Sexp::Parser.parse(expr) }.real
-        bench.report(Sexp::VERSION, length, time)
-      end
-    end
-    bench.gnuplot_compare
-  }
+  case ARGV[0].to_sym
+    when :unit, :test, nil
+      require 'test/unit'
+    when :bench, :benchmark
+      require 'benchmark'
+      require File.expand_path('../../gbench', __FILE__)
+      Citrus::GBench.load("sexp.bench"){|bench|
+        (1..100).each do |length|
+          puts "Generating on #{length}"
+          5.times do |i|
+            expr = Sexp.generate(length)
+            time = Benchmark.measure{ Sexp::parse(expr) }.real
+            bench.report(Sexp::VERSION, length, time)
+          end
+        end
+        bench.gnuplot_compare
+      }
+    when :profile
+      text = Sexp::generate(32)
+      require 'profile'
+      Sexp::parse(text)
+  end
 end
