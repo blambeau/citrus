@@ -187,5 +187,10 @@ if $0 == __FILE__
       text = Sexp::generate(32)
       require 'profile'
       Sexp::parse(text)
+    when :gnuplot
+      require File.expand_path('../../gbench', __FILE__)
+      Citrus::GBench.load("sexp.bench"){|bench|
+        bench.gnuplot_compare
+      }
   end
 end
