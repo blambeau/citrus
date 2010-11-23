@@ -1,4 +1,4 @@
-$LOAD_PATH << File.expand_path('../../lib', __FILE__)
+$LOAD_PATH << File.expand_path('../../../lib', __FILE__)
 
 # Benchmarking written by Bernard Lambeau and Jason Garber of the Treetop
 # project.
