@@ -1,4 +1,4 @@
-grammar Sexp
+grammar Sexp::Parser
 
   ######################################################### high-level rules
   rule expression
