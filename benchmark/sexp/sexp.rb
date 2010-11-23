@@ -7,4 +7,9 @@ module Sexp
   # the global namespace.
   Citrus.load(File.expand_path('../sexp', __FILE__))
   
+  # Delegated to the parser
+  def self.parse(*args, &block)
+    Sexp::Parser.parse(*args, &block)
+  end
+  
 end

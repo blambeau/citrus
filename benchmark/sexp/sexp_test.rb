@@ -4,7 +4,7 @@ require 'test/unit'
 class SexpTest < Test::Unit::TestCase
 
   def consume(text, rule = :expression)
-    Sexp::Parser.parse(text, :root => rule, :consume => true)
+    Sexp::parse(text, :root => rule, :consume => true)
   end
   
   def test_expression
