@@ -10,7 +10,7 @@ grammar Sexp::Parser
   end
   
   rule arglist 
-    expression ((COMMA | SPACES) expression)*
+    expression ((COMMA SPACING| SPACES) expression)*
   end
   
   rule termexpr
@@ -86,6 +86,7 @@ grammar Sexp::Parser
 
   ######################################################### SPACING
   rule SPACE       [ \t\n\r]              end
+  rule SPACING     SPACE*                 end
   rule SPACES      SPACE+                 end
 
 end

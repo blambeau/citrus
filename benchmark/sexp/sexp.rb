@@ -3,6 +3,9 @@ require 'citrus'
 
 module Sexp
 
+  # Version of this Sexp grammar
+  VERSION = "1.0.0"
+
   # Load and evaluate the grammars contained in sexp.citrus into 
   # the global namespace.
   Citrus.load(File.expand_path('../sexp', __FILE__))
@@ -12,8 +15,80 @@ module Sexp
     Sexp::Parser.parse(*args, &block)
   end
   
+  # Generates an expression of a given length
+  def self.generate(length = 32)
+    Gen.new.list(length)
+  end
+  
   # Generator of Sexp expressions
   class Gen
+    
+    # Examples of string literals (unquoted so far)
+    STRING_EXAMPLES = ["", "Hello world", "O'Neil", "Hello\nWorld", "\"Oh joy!\", he said."]
+    
+    # Examples of variable names
+    VARIABLE_EXAMPLES = ["a", "hello", "say_hello"]
+    
+    # Examples of variable names
+    MODULE_EXAMPLES = ["::X", "::Citrus", "Citrus::Grammar", "::Citrus::Grammar"]
+    
+    def flip
+      Kernel.rand >= 0.5
+    end
+    def select(examples)
+      examples[Kernel.rand(examples.size)]
+    end
+    
+    ####################################################### high-level rules
+    def expression(size)
+      size <= 1 ? termexpr : list(size)
+    end
+    def list(size)
+      args = []
+      while size > 0
+        got = 1 + Kernel.rand(size)
+        args << expression(got)
+        size -= got
+      end
+      "(" + args.join(', ') + ")"
+    end
+    def termexpr
+      self.send select([:NUMERIC, :STRING, :VARIABLE, :MODULE])
+    end
+    
+    ####################################################### numerics
+    def NUMERIC
+      flip ? INTEGER() : FLOAT()
+    end
+    def INTEGER
+      (SIGN() * Kernel.rand(2**32-1)).to_s
+    end
+    def FLOAT
+      (SIGN() * Kernel.rand*1000).to_s
+    end
+    def SIGN
+      flip ? +1 : -1
+    end
+    
+    ####################################################### strings
+    def STRING
+      flip ? SINGLE_QUOTED_STRING() : DOUBLE_QUOTED_STRING()
+    end
+    def SINGLE_QUOTED_STRING
+      "'" + select(STRING_EXAMPLES).gsub(/([^\\])'/,%q{\1\\\'}) + "'"
+    end
+    def DOUBLE_QUOTED_STRING
+      '"' + select(STRING_EXAMPLES).gsub('"','\"') + '"'
+    end
+    
+    ####################################################### vars, methods, modules
+    def VARIABLE
+      select(VARIABLE_EXAMPLES)
+    end
+    def MODULE
+      select(MODULE_EXAMPLES)
+    end
+    
   end # class Gen
   
   # Unit tests for the parser
@@ -29,6 +104,8 @@ module Sexp
         %q{a},
         %q{12},
         %q{"hello"},
+        %q{(12 15)},
+        %q{(12, 15)},
         %q{(list 12 13 15)},
         %q{(list (concat 12 13) 15)},
       ].each{|p|
@@ -83,5 +160,21 @@ module Sexp
 end
 
 if $0 == __FILE__
+  # run unit tests
   require 'test/unit'
+  
+  # run benchmarking
+  require 'benchmark'
+  require File.expand_path('../../gbench', __FILE__)
+  Citrus::GBench.load("sexp.bench"){|bench|
+    (1..100).each do |length|
+      puts "Generating on #{length}"
+      5.times do |i|
+        expr = Sexp.generate(length)
+        time = Benchmark.measure{ Sexp::Parser.parse(expr) }.real
+        bench.report(Sexp::VERSION, length, time)
+      end
+    end
+    bench.gnuplot_compare
+  }
 end
