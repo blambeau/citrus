@@ -22,16 +22,10 @@ grammar Sexp::Parser
     FLOAT | INTEGER
   end
   rule FLOAT
-    SIGN? (DIGITS '.' DIGITS)
+    /[+-]?[0-9]+([_][0-9]+)*\.[0-9]+([_][0-9]+)*/
   end
   rule INTEGER
-    SIGN? DIGITS
-  end
-  rule DIGITS
-    [0-9]+ ('_' [0-9]+)*
-  end
-  rule SIGN
-    [+-]
+    /[+-]?[0-9]+([_][0-9]+)*/
   end
   
   ######################################################### strings
@@ -39,40 +33,23 @@ grammar Sexp::Parser
     DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
   end
   rule DOUBLE_QUOTED_STRING
-    DOUBLE_QUOTE (BACKSLASH DOUBLE_QUOTE | !DOUBLE_QUOTE .)* DOUBLE_QUOTE
-    # could be? /["](([\\]["]|[^"])*?)["]/
+    /["](([\\]["]|[^"])*?)["]/
   end
   rule SINGLE_QUOTED_STRING
-    SINGLE_QUOTE (BACKSLASH SINGLE_QUOTE | !SINGLE_QUOTE .)* SINGLE_QUOTE
-    # could be? /['](([\\][']|[^'])*?)[']/
+    /['](([\\][']|[^'])*?)[']/
   end
   
   ######################################################### vars, methods, modules
   rule VARIABLE
-    VARIABLE_NAME
-  end
-  rule VARIABLE_NAME
-    [a-z] [a-zA-Z0-9_]*
+    /[a-z][a-zA-Z0-9_]*/
   end
   rule MODULE
-    '::'? MODULE_NAME ('::' MODULE_NAME)*
-  end
-  rule MODULE_NAME
-    [A-Z] [a-zA-Z0-9]*
+    /(::)?([A-Z][a-zA-Z0-9]*)(::[A-Z][a-zA-Z0-9]*)*/
   end
 
   ######################################################### symbols
   rule SYMBOL 
     LPAREN | RPAREN | COMMA
-  end
-  rule DOUBLE_QUOTE
-    ["]
-  end
-  rule SINGLE_QUOTE
-    [']
-  end
-  rule BACKSLASH
-    [\\]
   end
   rule COMMA
     ',' 
@@ -86,7 +63,7 @@ grammar Sexp::Parser
 
   ######################################################### SPACING
   rule SPACE       [ \t\n\r]              end
-  rule SPACING     SPACE*                 end
-  rule SPACES      SPACE+                 end
+  rule SPACING     /[ \t\n\r]*/           end
+  rule SPACES      /[ \t\n\r]+/           end
 
 end
