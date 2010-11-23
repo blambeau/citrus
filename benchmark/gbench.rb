@@ -79,19 +79,21 @@ module Citrus
       
       fittings = []
       keys.each_with_index{|version,index|
+        fdef = "a#{index}*((x/1000)**2) + b#{index}*(x/1000) + c#{index}"
         fittings << <<-EOF
-          f#{index}(x) = a#{index}*x*x + b#{index}*x + c#{index}
-          a#{index} = 0.5
-          b#{index} = 0.5
-          c#{index} = 0.5
+          f#{index}(x) = #{fdef}
+          a#{index} = 1.0
+          b#{index} = 1.0
+          c#{index} = 1.0
           fit f#{index}(x) '#{name}.#{version}.dat' using 1:2 via a#{index}, b#{index}, c#{index}
         EOF
       }
       
       plots = []
       keys.each_with_index{|version, index|
+        fdef = "a#{index}*((x/1000)**2) + b#{index}*(x/1000) + c#{index}"
         plots << <<-EOF.strip
-          a#{index}*x*x + b#{index}*x + c#{index} title 'fitting #{version}'
+          #{fdef} title 'fitting #{version}'
         EOF
         plots << <<-EOF.strip
           '#{name}.#{version}.dat' using 1:2 title '#{name} #{version}'
