@@ -138,6 +138,11 @@ module Sexp
         consume(Sexp::generate(64), :expression)
       }
     end
+    
+    def test_expression_on_example
+      expr = %q{(concat "hello " (ask "Name? ") (times "!" 3))}
+      assert_nothing_raised{ consume(expr, :expression) }
+    end
   
     def test_expression
       [ %q{a}, %q{12}, %q{"hello"}, %q{(12 15)}, %q{(12, 15)},
