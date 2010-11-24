@@ -38,7 +38,7 @@ require 'citrus'
 module Sexp
 
   # Version of this Sexp grammar
-  VERSION = "1.0.2"
+  VERSION = "1.0.3"
 
   # Load and evaluate the grammars contained in sexp.citrus into 
   # the global namespace.
@@ -60,10 +60,10 @@ module Sexp
     # Examples of string literals (unquoted so far)
     STRING_EXAMPLES = ["", "Hello world", "O'Neil", "Hello\nWorld", "\"Oh joy!\", he said."]
     
-    # Examples of variable names
-    VARIABLE_EXAMPLES = ["a", "hello", "say_hello"]
+    # Examples of lexsymbol names
+    LEXSYMBOL_EXAMPLES = ["a", "hello", "say_hello"]
     
-    # Examples of variable names
+    # Examples of module names
     MODULE_EXAMPLES = ["::X", "::Citrus", "Citrus::Grammar", "::Citrus::Grammar"]
     
     def flip
@@ -87,7 +87,7 @@ module Sexp
       "(" + args.join(', ') + ")"
     end
     def termexpr
-      self.send select([:NUMERIC, :STRING, :VARIABLE, :MODULE])
+      self.send select([:NUMERIC, :STRING, :LEXSYMBOL, :MODULE])
     end
     
     ####################################################### numerics
@@ -116,8 +116,8 @@ module Sexp
     end
     
     ####################################################### vars, methods, modules
-    def VARIABLE
-      select(VARIABLE_EXAMPLES)
+    def LEXSYMBOL
+      select(LEXSYMBOL_EXAMPLES)
     end
     def MODULE
       select(MODULE_EXAMPLES)
@@ -170,9 +170,9 @@ module Sexp
       }
     end
       
-    def test_variable
+    def test_lexsymbol
       [ "a", "hello", "hello_world" ].each{|p| 
-        assert_nothing_raised{ consume(p, :VARIABLE) }
+        assert_nothing_raised{ consume(p, :LEXSYMBOL) }
       }
     end
       

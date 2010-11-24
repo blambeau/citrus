@@ -14,7 +14,7 @@ grammar Sexp::Parser
   end
   
   rule termexpr
-    NUMERIC | STRING | VARIABLE | MODULE
+    NUMERIC | STRING | LEXSYMBOL | MODULE
   end
 
   ######################################################### numerics
@@ -40,7 +40,7 @@ grammar Sexp::Parser
   end
   
   ######################################################### vars, methods, modules
-  rule VARIABLE
+  rule LEXSYMBOL
     /[a-z][a-zA-Z0-9_]*/
   end
   rule MODULE
