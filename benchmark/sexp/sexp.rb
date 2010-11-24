@@ -61,7 +61,7 @@ module Sexp
     STRING_EXAMPLES = ["", "Hello world", "O'Neil", "Hello\nWorld", "\"Oh joy!\", he said."]
     
     # Examples of lexsymbol names
-    LEXSYMBOL_EXAMPLES = ["a", "hello", "say_hello"]
+    LEXSYMBOL_EXAMPLES = ["a", "hello", "say_hello", "empty?", "merge!"]
     
     # Examples of module names
     MODULE_EXAMPLES = ["::X", "::Citrus", "Citrus::Grammar", "::Citrus::Grammar"]
@@ -171,7 +171,7 @@ module Sexp
     end
       
     def test_lexsymbol
-      [ "a", "hello", "hello_world" ].each{|p| 
+      [ "a", "hello", "hello_world", "empty?", "merge!" ].each{|p| 
         assert_nothing_raised{ consume(p, :LEXSYMBOL) }
       }
     end
