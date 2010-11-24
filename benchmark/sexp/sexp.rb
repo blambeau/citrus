@@ -140,15 +140,8 @@ module Sexp
     end
   
     def test_expression
-      [ 
-        %q{a},
-        %q{12},
-        %q{"hello"},
-        %q{(12 15)},
-        %q{(12, 15)},
-        %q{(list 12 13 15)},
-        %q{(list (concat 12 13) 15)},
-      ].each{|p|
+      [ %q{a}, %q{12}, %q{"hello"}, %q{(12 15)}, %q{(12, 15)},
+        %q{(list 12 13 15)}, %q{(list (concat 12 13) 15)} ].each{|p|
         assert_nothing_raised{ consume(p, :expression) }
       }
     end
@@ -166,19 +159,13 @@ module Sexp
     end
       
     def test_double_quoted_string
-      [ %q{""}, 
-        %q{"hello"},
-        %q{"O\"Neil"}
-      ].each{|p| 
+      [ %q{""}, %q{"hello"}, %q{"O\"Neil"} ].each{|p| 
         assert_nothing_raised{ consume(p, :DOUBLE_QUOTED_STRING) }
       }
     end
       
     def test_single_quoted_string
-      [ %q{''}, 
-        %q{'hello'},
-        %q{'O\'Neil'}
-      ].each{|p| 
+      [ %q{''}, %q{'hello'}, %q{'O\'Neil'} ].each{|p| 
         assert_nothing_raised{ consume(p, :SINGLE_QUOTED_STRING) }
       }
     end
@@ -200,8 +187,8 @@ module Sexp
 end
 
 if $0 == __FILE__
-  case ARGV[0].to_sym
-    when :unit, :test, nil
+  case (ARGV[0] || 'test').to_sym
+    when :unit, :test
       require 'test/unit'
     when :bench, :benchmark
       require 'benchmark'
