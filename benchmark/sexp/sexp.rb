@@ -187,13 +187,14 @@ module Sexp
 end
 
 if $0 == __FILE__
+  require File.expand_path('../../gbench', __FILE__)
+  bench_file = File.expand_path('../sexp.bench', __FILE__)
   case (ARGV[0] || 'test').to_sym
     when :unit, :test
       require 'test/unit'
     when :bench, :benchmark
       require 'benchmark'
-      require File.expand_path('../../gbench', __FILE__)
-      Citrus::GBench.load("sexp.bench"){|bench|
+      Citrus::GBench.load(bench_file){|bench|
         (1..100).each do |length|
           puts "Generating on #{length}"
           5.times do |i|
@@ -204,8 +205,7 @@ if $0 == __FILE__
         end
       }
     when :gnuplot
-      require File.expand_path('../../gbench', __FILE__)
-      Citrus::GBench.load("sexp.bench"){|bench|
+      Citrus::GBench.load(bench_file){|bench|
         bench.gnuplot_compare ARGV[1..-1]
       }
     when :profile
