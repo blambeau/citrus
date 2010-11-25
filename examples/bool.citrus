@@ -1,0 +1,105 @@
+grammar Bool
+
+  ### precedence rules
+  rule expression 
+    or_expression
+  end
+
+  rule or_expression
+    or | and_expression
+  end
+
+  rule and_expression 
+    and | neg_expression                        
+  end
+
+  rule neg_expression
+    not | term_expression
+  end
+
+  rule term_expression
+    proposition | literal | parenthesed
+  end
+
+  ### production rules
+  rule or
+    (left:and_expression OR right:or_expression) {
+      [ :or, left.value, right.value ]
+    }  
+  end
+
+  rule and
+    (left:neg_expression AND right:and_expression) {
+      [ :and, left.value, right.value ]
+    }
+  end
+  
+  rule not
+    (NOT expr:term_expression){
+      [ :not, expr.value ]
+    }
+  end
+
+  rule proposition
+    (!reserved PROPNAME){
+      [ :proposition,  strip ]
+    }
+  end
+
+  rule literal
+    (TRUE | FALSE){
+      [ :literal, (strip == "true" ? true : false) ]
+    }
+  end
+  
+  rule parenthesed
+    (LPAREN expr:expression RPAREN){
+      expr.value
+    }
+  end
+
+  ### literals
+  rule TRUE  
+    "true"  SPACING 
+  end
+  rule FALSE 
+    "false" SPACING
+  end
+  rule PROPNAME
+    /[a-z][a-z0-9\_]*/ SPACING
+  end
+
+  ### keywords
+  rule OR  
+    "or"  SPACING 
+  end
+  rule AND 
+    "and" SPACING 
+  end
+  rule NOT 
+    "not" SPACING 
+  end
+
+  # symbols
+  rule SYMBOL 
+    LPAREN | RPAREN 
+  end
+  rule LPAREN 
+    '(' SPACING 
+  end
+  rule RPAREN 
+    ')' SPACING 
+  end
+
+  # SPACING
+  rule PSEUDOSPACE (SPACE | SYMBOL | EOF) end
+  rule SPACE       [ \t\n\r]              end
+  rule EOF         !.                     end
+  rule SPACING     SPACE*                 end
+
+  # reserved words
+  rule reserved
+    ( "or" | "and" | "not" | "true" | "false" ) PSEUDOSPACE
+  end
+
+end
