@@ -24,37 +24,37 @@ grammar Bool
   ### production rules
   rule or
     (left:and_expression OR right:or_expression) {
-      [ :or, left.value, right.value ]
+      def value; [ :or, left.value, right.value ]; end
     }  
   end
 
   rule and
     (left:neg_expression AND right:and_expression) {
-      [ :and, left.value, right.value ]
+      def value; [ :and, left.value, right.value ]; end
     }
   end
   
   rule not
     (NOT expr:term_expression){
-      [ :not, expr.value ]
+      def value; [ :not, expr.value ]; end
     }
   end
 
   rule proposition
     (!reserved PROPNAME){
-      [ :proposition,  strip ]
+      def value; [ :proposition,  strip ]; end
     }
   end
 
   rule literal
     (TRUE | FALSE){
-      [ :literal, (strip == "true" ? true : false) ]
+      def value; [ :literal, (strip == "true" ? true : false) ]; end
     }
   end
   
   rule parenthesed
     (LPAREN expr:expression RPAREN){
-      expr.value
+      def value; expr.value; end
     }
   end
 

@@ -38,7 +38,7 @@ require 'citrus'
 module Sexp
 
   # Version of this Sexp grammar
-  VERSION = "2.0.3"
+  VERSION = "3.0.3"
 
   # Load and evaluate the grammars contained in sexp.citrus into 
   # the global namespace.
