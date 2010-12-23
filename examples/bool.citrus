@@ -6,19 +6,19 @@ grammar Bool
   end
 
   rule or_expression
-    or | and_expression
+    (or | and_expression){ first.value }
   end
 
   rule and_expression 
-    and | neg_expression                        
+    (and | neg_expression){ first.value }                        
   end
 
   rule neg_expression
-    not | term_expression
+    (not | term_expression){ first.value }
   end
 
   rule term_expression
-    proposition | literal | parenthesed
+    (proposition | literal | parenthesed){ first.value }
   end
 
   ### production rules
