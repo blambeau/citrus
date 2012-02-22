@@ -630,7 +630,7 @@ module Citrus
       input.pos = opts[:offset] if opts[:offset] > 0
 
       events = input.exec(self)
-      length = events[-1]
+      length = events.last
 
       if !length || (opts[:consume] && length < (string.length - opts[:offset]))
         raise ParseError, input
